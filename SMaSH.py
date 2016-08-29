@@ -116,7 +116,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-bam', action='store', dest='bam', required=False, default='ALL', 
 	help='input bam/sam files to be tested (comma separated list) or ALL to use all bam in current dir. Note bam files must end in .bam and be indexed')
 parser.add_argument('-i', action='store', dest='infile', required=False,
-	default='/fs/lustre/osu7905/references/snps/snps_snp_id.vcf', help='input locations file')
+	default='./snps_hg19.vcf', help='input locations file')
 parser.add_argument('-o', action='store', dest='outname', required=False, default='pval_out.txt',
 	help='output file name [pval_out.txt]')
 parser.add_argument('-chr_index', action='store', dest='chr_index', required=False, default=0, type=int,
