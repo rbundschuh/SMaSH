@@ -31,14 +31,15 @@ usage: SMaSH.py [-h] [-bam BAM_COMMA_LIST] [-i INFILE] [-o OUTNAME]
                 [bam [bam ...]]
 
 positional arguments:
-  bam                   BAM files to check. Note bam files must end in .bam
-                        and be indexed
+  bam                   BAM/SAM files to check. Note BAMs must end in .bam and
+                        be indexed
 
 optional arguments:
   -h, --help            show this help message and exit
   -bam BAM_COMMA_LIST, --bam BAM_COMMA_LIST
                         [deprecated] input BAM/SAM files to be tested (comma
-                        separated list) or ALL to use all BAMs in current dir.
+                        separated list) or 'ALL' to use all BAMs in current
+                        dir.
   -i INFILE, --positions INFILE
                         input locations file
   -o OUTNAME, --output_file OUTNAME
@@ -57,7 +58,8 @@ optional arguments:
                         The directory to save output files. [default: ./]
   -include_rgid, --include_rgid
                         include BAM's Read Group ID value in output and only
-                        print the bam's basename, not full path
+                        print the BAM's basename, not full path
+
 ```
 
 Note: SMaSH requires the following python libraries:
