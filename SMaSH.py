@@ -35,7 +35,7 @@ from __future__ import print_function
 
 from collections import defaultdict
 import math
-import numpy as np
+import numpy
 from scipy.special import comb
 from scipy import stats
 import argparse
@@ -126,7 +126,7 @@ def write_list(inList, outFile): outFile.write("\t".join( map( str, inList ) ) +
 parser = argparse.ArgumentParser()
 
 parser.add_argument('-bam', '--bam',action='store', dest='bam_comma_list', required=False, default='', 
-	help='[deprecated] input BAM/SAM files to be tested (comma separated list) or ALL to use all BAMs in current dir. ')
+	help="[deprecated] input BAM/SAM files to be tested (comma separated list) or 'ALL' to use all BAMs in current dir. ")
 parser.add_argument('-i', '--positions', action='store', dest='infile', required=False,
 	default= os.path.join(os.path.dirname(os.path.realpath(__file__)),'snps_hg19.vcf'), help='input locations file')
 parser.add_argument('-o', '--output_file', action='store', dest='outname', required=False, default='pval_out.txt',
@@ -145,8 +145,8 @@ parser.add_argument('-output_dir', '--output_dir', action='store', required=Fals
 	help='The directory to save output files.  [default: ./]')
 parser.add_argument('-include_rgid', '--include_rgid', action='store_true',dest='include_rgid', required=False,
 	default='False', 
-	help="include BAM's Read Group ID value in output and only print the bam's basename, not full path" )
-parser.add_argument('bam',nargs='*', help = 'BAM files to check.  Note bam files must end in .bam and be indexed')
+	help="include BAM's Read Group ID value in output and only print the BAM's basename, not full path" )
+parser.add_argument('bam',nargs='*', help = 'BAM/SAM files to check.  Note BAMs must end in .bam and be indexed')
 
 args = parser.parse_args()
 
