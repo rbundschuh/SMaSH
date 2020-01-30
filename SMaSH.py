@@ -28,7 +28,7 @@ from __future__ import print_function
 #
 # SMaSH - Sample Matching using SNPs in Humans
 #
-# Maximilian Westpha, David Frankhouser, Carmine Sonzone, Peter G. Shields,
+# Maximilian Westphal, David Frankhouser, Carmine Sonzone, Peter G. Shields,
 # Pearlly Yan, and Ralf Bundschuh
 #
 # Usability and Python3 update by Alan Hoyle, UNC Lineberger Bioinformatics
@@ -170,7 +170,7 @@ if  bams == ['ALL'] or bams == ['*']:
 elif bam_comma_list == "ALL" or bam_comma_list == "*" or bam_comma_list == "*.bam" :
 	print (strftime("[%Y-%m-%d %H:%M:%S]"), "Adding *.bam from current directory...")
 	bams += glob.glob("*.bam")
-elif len(bam_comma_list)>4:  # has to be greater than for for the file to be x.bam
+elif len(bam_comma_list)>4:  # has to be greater than four for the file to be x.bam
 	bams += bam_comma_list.split(',')
 
 elif len(bam_comma_list)>0: 
@@ -247,7 +247,7 @@ for bam in bams:
 
 	for lines in variants:
 		if lines[0] == "#": continue
-		cols = lines.split('\t')
+		cols = lines.strip().split('\t')
 		chrom = cols[chr_index]
 		# checks if the bam file's chromosome annotation matches the vcf file annotation
 		# and edits the chromosome accordingly to be able to properly retrieve reads from the bam file
