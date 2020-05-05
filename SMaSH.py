@@ -228,7 +228,8 @@ for bam in bams:
 	elif bam.split('.')[-1] == 'sam': samfile = pysam.Samfile(bam, 'r')
 	else: sys.exit('Cannot tell file type of '+bam+'. Make sure file extension is bam or sam.')
 
-	rgids[bam] = samfile.header['RG'][0]['ID']
+	if include_rgid == True:
+		rgids[bam] = samfile.header['RG'][0]['ID']
 
 	printable_bam = bam
 	if include_rgid == True:
