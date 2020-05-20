@@ -81,7 +81,7 @@ def p_s(q, h, s):
 		elif h == 3 or h == 4: return 2*q*(1-q) ** 3 #WW-WA, WA-WW
 		elif h == 5 or h == 6: return q**2 * (1-q) ** 2 #WW-AA, AA-WW
 		elif h == 7 or h == 8: return 2 * q**3 * (1-q) #AA-WA, WA-AA
-	else: print ("h or s out of range")
+	print ("h or s out of range")
 
 
 #set s1 = WW, s2 = AA, s3 = WA
@@ -302,7 +302,11 @@ if new_entry == True:
 header = ['.'] + bams
 outfile = open(output_dir + os.path.sep + outname, 'w')
 write_list(printable_header, outfile)
+revoutfile = open(output_dir + os.path.sep + 'issameindividual_' + outname, 'w')
+revoutfile.write('# probabilities to be from the same individual' + "\n");
+write_list(printable_header, revoutfile)
 comp_data = defaultdict(lambda: defaultdict(float))
+rev_comp_data = defaultdict(lambda: defaultdict(float))
 comps = set([])
 p_out = open(output_dir + os.path.sep + outname + '.pvals.test.txt', 'w')
 p_header = ['#sampA', 'sampB', 'loc', 'sampA [ref, alt]', 'sampB [ref, alt]', 'pval s=0', 'pval s=1']
@@ -342,6 +346,9 @@ for file_row in bams:
 		prob = s_0 * Decimal(p_s_0) / (s_0 * Decimal(p_s_0) + s_1 * Decimal(p_s_1))
 		comp_data[file_row][file_col] = prob
 		comp_data[file_col][file_row] = prob
+		revprob = s_1 * Decimal(p_s_1) / (s_0 * Decimal(p_s_0) + s_1 * Decimal(p_s_1))
+		rev_comp_data[file_row][file_col] = revprob
+		rev_comp_data[file_col][file_row] = revprob
 
 reformat_output = open(output_dir + os.path.sep + 'best_guesses.' + outname, 'w')
 for file_row in bams:
@@ -349,6 +356,7 @@ for file_row in bams:
 	if include_rgid == True:
 		printable_row = os.path.basename(file_row) + '_('+rgids[file_row]+')'
 	outline = [printable_row]
+	revoutline = [printable_row]
 	output = [printable_row]
 	for file_col in bams:
 		printable_col = file_col
@@ -356,10 +364,12 @@ for file_row in bams:
 			printable_col = os.path.basename(file_col) + '_('+rgids[file_col]+')'
 
 		outline.append(comp_data[file_row][file_col])
+		revoutline.append(rev_comp_data[file_row][file_col])
 		if file_col == file_row: continue
 		elif comp_data[file_row][file_col] == 'NOTEST': continue
 		elif comp_data[file_row][file_col] <= 0.05: output.append([printable_col, comp_data[file_row][file_col]])
 	write_list(outline, outfile)
+	write_list(revoutline, revoutfile)
 	write_list(output, reformat_output)
 
 print (strftime("[%Y-%m-%d %H:%M:%S]"), 'SMaSH finished. Look for results in directory',output_dir + os.path.sep)
