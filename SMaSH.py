@@ -239,12 +239,20 @@ for bam in bams:
 
 	print (strftime("[%Y-%m-%d %H:%M:%S]"), 'Reading sample variant read counts from', printable_bam)
 	file_name = '.'.join(bam.split('.')[0:-1])
+	chr_in_annot = False
 	try: # checks the bam file for the chromosome annotation type and selects chr1 or 1 for example
-		for alignedread in samfile.fetch("chr1", 1, 1):
-			chr_in_annot = True
+		samfile.fetch("chr1", 1, 1) # just calling it to see if it generates an error
+		chr_in_annot = True
 		chrom_refname = "chr"
 	except(ValueError):
 		chrom_refname = ""
+	if not chr_in_annot:
+		try: # checks reversely if bam file contains 1 as chromosome; if not something is wrong with the bam or bai files
+			samfile.fetch("1", 1, 1) # just calling it to see if it generates an error
+		except(ValueError):
+			eprint ('ERROR bam files neither contain "chr1" nor "1" as chromosomes; you may have forgotten to provide bam index files')
+			sys.exit()
+		
 
 	for lines in variants:
 		if lines[0] == "#": continue
