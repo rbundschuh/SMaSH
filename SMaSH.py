@@ -85,7 +85,7 @@ def p_s(q, h, s):
 def calc_matrix(n_tot, n_A):
 	Q_WW = Q(n_tot, n_A, 1, homozygous)# * Decimal(p_s(p, "WW"))
 	Q_AA = Q(n_tot, n_A, homozygous, 1)# * Decimal(p_s(p, "AA"))
-	Q_WA = Q(n_tot, n_A, 2, 2)# * Decimal(p_s(p, "WA"))
+	Q_WA = Q(n_tot, n_A, heterozygous, heterozygous)# * Decimal(p_s(p, "WA"))
 	matrix = [Q_WW, Q_AA, Q_WA]
 	return matrix
 
