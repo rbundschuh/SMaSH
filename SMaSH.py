@@ -123,7 +123,7 @@ def write_list(inList, outFile): outFile.write("\t".join( map( str, inList ) ) +
 parser = argparse.ArgumentParser()
 
 parser.add_argument('-bam', '--bam',action='store', dest='bam_comma_list', required=False, default='', 
-	help="[deprecated] input BAM/SAM files to be tested (comma separated list) or 'ALL' to use all BAMs in current dir. ")
+	help="[deprecated] input BAM/SAM/CRAM files to be tested (comma separated list) or 'ALL' to use all BAMs and CRAMs in current dir. ")
 parser.add_argument('-i', '--positions', action='store', dest='infile', required=False,
 	default= os.path.join(os.path.dirname(os.path.realpath(__file__)),'snps_hg19.vcf'), help='input locations file')
 parser.add_argument('-o', '--output_file', action='store', dest='outname', required=False, default='pval_out.txt',
@@ -143,7 +143,7 @@ parser.add_argument('-output_dir', '--output_dir', action='store', required=Fals
 parser.add_argument('-include_rgid', '--include_rgid', action='store_true',dest='include_rgid', required=False,
 	default='False', 
 	help="include BAM's Read Group ID value in output and only print the BAM's basename, not full path" )
-parser.add_argument('bam',nargs='*', help = 'BAM/SAM files to check.  Note BAMs must end in .bam and be indexed')
+parser.add_argument('bam',nargs='*', help = 'BAM/SAM/CRAM files to check.  Note BAMs must end in .bam and be indexed')
 
 args = parser.parse_args()
 
@@ -163,19 +163,25 @@ include_rgid = args.include_rgid
 if  bams == ['ALL'] or bams == ['*']: 
 	print (strftime("[%Y-%m-%d %H:%M:%S]"), "Selecting *.bam from current directory")
 	bams = glob.glob("*.bam")
+	print (strftime("[%Y-%m-%d %H:%M:%S]"), "Selecting *.cram from current directory")
+	bams = glob.glob("*.cram")
 
-elif bam_comma_list == "ALL" or bam_comma_list == "*" or bam_comma_list == "*.bam" :
-	print (strftime("[%Y-%m-%d %H:%M:%S]"), "Adding *.bam from current directory...")
-	bams += glob.glob("*.bam")
+elif bam_comma_list == "ALL" or bam_comma_list == "*" or bam_comma_list == "*.bam" or bam_comma_list == "*.cram":
+	if bam_comma_list != "*.cram":
+		print (strftime("[%Y-%m-%d %H:%M:%S]"), "Adding *.bam from current directory...")
+		bams += glob.glob("*.bam")
+	if bam_comma_list != "*.bam":
+		print (strftime("[%Y-%m-%d %H:%M:%S]"), "Adding *.cram from current directory...")
+		bams += glob.glob("*.cram")
 elif len(bam_comma_list)>4:  # has to be greater than four for the file to be x.bam
 	bams += bam_comma_list.split(',')
 
 elif len(bam_comma_list)>0: 
-	eprint("-bam[",bam_comma_list, "]is not valid.  use 'ALL' or a comma-separated list of BAM/SAM files.")
+	eprint("-bam[",bam_comma_list, "]is not valid.  use 'ALL' or a comma-separated list of BAM/SAM/CRAM files.")
 	sys.exit (1)
 
 if len(bams) < 2:  
-	eprint ('Not enough bams specified. ')
+	eprint ('Not enough sams/bams/crams specified. ')
 	sys.exit (1)
 
 
@@ -209,21 +215,22 @@ else:
 		data = defaultdict(dd)
 
 # data = defaultdict(lambda: defaultdict(list))
-# read bam/sam file type and open bam file
+# read bam/sam/cram file type and open bam file
 new_entry = False
 
 rgids = {}
 printable_header = ['.']
 
 if bams ==['']:
-	eprint ('ERROR No bams specified')
+	eprint ('ERROR No bams/sams/crams specified')
 	parser.print_help()
 	sys.exit()
 
 for bam in bams:
 	if bam.split('.')[-1] == 'bam': samfile = pysam.Samfile(bam, 'rb')
 	elif bam.split('.')[-1] == 'sam': samfile = pysam.Samfile(bam, 'r')
-	else: sys.exit('Cannot tell file type of '+bam+'. Make sure file extension is bam or sam.')
+	elif bam.split('.')[-1] == 'cram': samfile = pysam.Samfile(bam, 'rc')
+	else: sys.exit('Cannot tell file type of '+bam+'. Make sure file extension is bam or sam or cram.')
 
 	if include_rgid == True:
 		rgids[bam] = samfile.header['RG'][0]['ID']
