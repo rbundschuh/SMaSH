@@ -37,6 +37,7 @@ from collections import defaultdict
 import math
 import numpy
 from scipy.special import comb
+from scipy.special import beta
 from scipy import stats
 import argparse
 from time import gmtime, strftime
@@ -51,10 +52,6 @@ def eprint (*args, **kwargs):
     # function that easily prints to stderr
     print (*args, file=sys.stderr,**kwargs)
 
-# calculate beta function
-def B(alpha, beta_val):
-	return Decimal(math.factorial(alpha - 1)) * Decimal(math.factorial(beta_val - 1)) / Decimal(math.factorial(alpha + beta_val - 1))
-
 # Alpha/Beta for Beta functions
 homozygous = 30
 heterozygous = 2
@@ -65,7 +62,7 @@ p_s_1 = 0.01
 
 # n_tot = total reads, n_A = alternate reads
 def Q(n_tot, n_A, alpha, beta_val):
-	return comb(n_tot, n_A, exact=True) * B(alpha + n_A, beta_val + n_tot - n_A) / B(alpha, beta_val)
+	return comb(n_tot, n_A, exact=True) * beta(alpha + n_A, beta_val + n_tot - n_A) / beta(alpha, beta_val)
 
 # q = allele frequency
 def p_s(q, h, s):
