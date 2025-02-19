@@ -62,7 +62,7 @@ p_s_1 = 0.01
 
 # n_tot = total reads, n_A = alternate reads
 def Q(n_tot, n_A, alpha, beta_val):
-	return comb(n_tot, n_A, exact=True) * beta(alpha + n_A, beta_val + n_tot - n_A) / beta(alpha, beta_val)
+	return (n_tot+alpha+beta_val)/((n_A+alpha)*(n_tot-n_A+beta_val))*beta(n_tot+1,alpha+beta_val)/(beta(n_A+1, alpha)*beta(n_tot-n_A+1,beta_val))
 
 # q = allele frequency
 def p_s(q, h, s):
