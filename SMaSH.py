@@ -145,7 +145,7 @@ parser.add_argument('-include_rgid', '--include_rgid', action='store_true',dest=
 	help="include BAM's Read Group ID value in output and only print the BAM's basename, not full path" )
 parser.add_argument('-ignore_nochr1', '--ignore_nochr1', action='store_true',dest='ignore_nochr1', required=False,
 	default=False,
-	help="include BAM's Read Group ID value in output and only print the BAM's basename, not full path" )
+	help="Skip the sanity check for chr1 in the input bam files" )
 parser.add_argument('bam',nargs='*', help = 'BAM/SAM/CRAM files to check.  Note BAMs must end in .bam and be indexed')
 
 args = parser.parse_args()
