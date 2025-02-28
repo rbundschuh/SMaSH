@@ -143,6 +143,9 @@ parser.add_argument('-output_dir', '--output_dir', action='store', required=Fals
 parser.add_argument('-include_rgid', '--include_rgid', action='store_true',dest='include_rgid', required=False,
 	default='False', 
 	help="include BAM's Read Group ID value in output and only print the BAM's basename, not full path" )
+parser.add_argument('-ignore_nochr1', '--ignore_nochr1', action='store_true',dest='ignore_nochr1', required=False,
+	default='False', 
+	help="include BAM's Read Group ID value in output and only print the BAM's basename, not full path" )
 parser.add_argument('bam',nargs='*', help = 'BAM/SAM/CRAM files to check.  Note BAMs must end in .bam and be indexed')
 
 args = parser.parse_args()
@@ -243,20 +246,22 @@ for bam in bams:
 
 	print (strftime("[%Y-%m-%d %H:%M:%S]"), 'Reading sample variant read counts from', printable_bam)
 	file_name = '.'.join(bam.split('.')[0:-1])
-	chr_in_annot = False
-	try: # checks the bam file for the chromosome annotation type and selects chr1 or 1 for example
-		samfile.fetch("chr1", 1, 1) # just calling it to see if it generates an error
-		chr_in_annot = True
-		chrom_refname = "chr"
-	except(ValueError):
-		chrom_refname = ""
-	if not chr_in_annot:
-		try: # checks reversely if bam file contains 1 as chromosome; if not something is wrong with the bam or bai files
-			samfile.fetch("1", 1, 1) # just calling it to see if it generates an error
+	if not args.ignore_nochr1:
+		chr_in_annot = False
+		try: # checks the bam file for the chromosome annotation type and selects chr1 or 1 for example
+			samfile.fetch("chr1", 1, 1) # just calling it to see if it generates an error
+			chr_in_annot = True
+			chrom_refname = "chr"
 		except(ValueError):
-			eprint ('ERROR bam files neither contain "chr1" nor "1" as chromosomes; you may have forgotten to provide bam index files')
-			sys.exit()
-		
+			chrom_refname = ""
+		if not chr_in_annot:
+			try: # checks reversely if bam file contains 1 as chromosome; if not something is wrong with the bam or bai files
+				samfile.fetch("1", 1, 1) # just calling it to see if it generates an error
+			except(ValueError):
+				eprint ('ERROR bam files neither contain "chr1" nor "1" as chromosomes; you may have forgotten to provide bam index files')
+				sys.exit()
+	else:
+		chrom_refname = "chr"
 
 	for lines in variants:
 		if lines[0] == "#": continue
