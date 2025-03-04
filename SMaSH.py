@@ -263,7 +263,6 @@ for bam in bams:
 	for lines in variants:
 		if lines[0] == "#": continue
 		cols = lines.strip().split('\t')
-		print(cols)
 		chrom = cols[chr_index]
 		# checks if the bam file's chromosome annotation matches the vcf file annotation
 		# and edits the chromosome accordingly to be able to properly retrieve reads from the bam file
