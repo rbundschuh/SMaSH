@@ -143,9 +143,9 @@ parser.add_argument('-output_dir', '--output_dir', action='store', required=Fals
 parser.add_argument('-include_rgid', '--include_rgid', action='store_true',dest='include_rgid', required=False,
 	default='False', 
 	help="include BAM's Read Group ID value in output and only print the BAM's basename, not full path" )
-parser.add_argument('-ignore_nochr1', '--ignore_nochr1', action='store_true',dest='ignore_nochr1', required=False,
-	default=False,
-	help="Skip the sanity check for chr1 in the input bam files" )
+parser.add_argument('-sanity_check_chr', '--sanity_check_chr', action='store',dest='sanity_check_chr', required=False,
+	default=None,
+	help="The chromosome name to use in the bam index sanity check instead of 'chr1' (must exist and exactly match the name in the input .bam and accompanying index file)" )
 parser.add_argument('bam',nargs='*', help = 'BAM/SAM/CRAM files to check.  Note BAMs must end in .bam and be indexed')
 
 args = parser.parse_args()
@@ -246,7 +246,7 @@ for bam in bams:
 
 	print (strftime("[%Y-%m-%d %H:%M:%S]"), 'Reading sample variant read counts from', printable_bam)
 	file_name = '.'.join(bam.split('.')[0:-1])
-	if not args.ignore_nochr1:
+	if not args.sanity_check_chr:
 		chr_in_annot = False
 		try: # checks the bam file for the chromosome annotation type and selects chr1 or 1 for example
 			samfile.fetch("chr1", 1, 1) # just calling it to see if it generates an error
@@ -261,11 +261,21 @@ for bam in bams:
 				eprint ('ERROR bam files neither contain "chr1" nor "1" as chromosomes; you may have forgotten to provide bam index files')
 				sys.exit()
 	else:
-		chrom_refname = "chr"
+		if "chr" in args.sanity_check_chr:
+			chrom_refname = "chr"
+		else:
+			chrom_refname = ""
+		try:
+			samfile.fetch(args.sanity_check_chr)
+		except(ValueError):
+			eprint (f'ERROR bam files do not contain {args.sanity_check_chr} as chromosomes; you may have forgotten to provide bam index files')
+			sys.exit()
+
 
 	for lines in variants:
 		if lines[0] == "#": continue
 		cols = lines.strip().split('\t')
+		print(cols)
 		chrom = cols[chr_index]
 		# checks if the bam file's chromosome annotation matches the vcf file annotation
 		# and edits the chromosome accordingly to be able to properly retrieve reads from the bam file
